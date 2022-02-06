@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "bl": "^5.0.0",
     "https-proxy-agent": "^5.0.0",
     "node-fetch": "^3.2.0",
     "socks-proxy-agent": "^6.1.1"
