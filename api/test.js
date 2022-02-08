@@ -1,6 +1,7 @@
 import fetchHTML from './fetch.js'
 
-fetchHTML().then((res) => console.log(res))
+const response = await fetchHTML()
+
+console.log(response)
 
 // console.log('im here')
-// console.log(response)
