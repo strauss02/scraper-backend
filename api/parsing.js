@@ -1,4 +1,7 @@
 import * as cheerio from 'cheerio'
+import { checkPageExistence } from './fetching.js'
+import config from './config.js'
+import { fetchHTML } from './fetching.js'
 
 /**
  *
@@ -17,8 +20,8 @@ export function parseButtonLinks(HTML) {
   return hrefs
 }
 
-export function parseInfoFromEntry(entry) {
-  const $ = cheerio.load(entry)
+export async function parseInfoFromEntry(entry) {
+  const $ = await cheerio.load(entry)
   let info = {}
   info.title = parseTitleFromHTML($)
   info.content = parseContentFromHTML($)
@@ -55,4 +58,26 @@ function parseAuthorAndDateFromHTML($) {
   const dateUncut = trimmedInfoLine.slice(dateStartIndex)
   const date = dateUncut.replace(/(\r\n|\n|\r)/gm, '')
   return { date, author }
+}
+
+export async function getAllEntriesURLs() {
+  let pageNum = 0
+  let urlTemplate = `${config.STRONGHOLD_URL}?page=${pageNum}`
+  let entriesURLs = []
+  let pageExistence = await checkPageExistence(urlTemplate)
+  while (pageExistence) {
+    await fetchHTML(urlTemplate)
+      .then((res) => {
+        const entryLinks = parseButtonLinks(res)
+        entriesURLs = entriesURLs.concat(entryLinks)
+        pageNum += 1
+        urlTemplate = `${config.STRONGHOLD_URL}?page=${pageNum}`
+      })
+      .catch((err) => {
+        pageExistence = false
+      })
+  }
+  // Remove all the undefined values
+  entriesURLs = entriesURLs.filter((item) => item)
+  return entriesURLs
 }

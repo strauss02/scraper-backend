@@ -6,7 +6,6 @@ import config from './config.js'
 import util from 'util'
 import { resolve } from 'path'
 import bl from 'bl'
-
 export async function fetchHTML(URL) {
   const proxy = process.env.SOCKS_PROXY || 'socks5h://127.0.0.1:9050'
   console.log('Using proxy server %j', proxy)
@@ -24,7 +23,6 @@ export async function fetchHTML(URL) {
   return new Promise((resolve, reject) => {
     httpOrHttps.get(options, (response) => {
       // response.setEncoding('utf8')
-      console.log(response.statusCode)
       if (response.statusCode == 418) {
         reject('page does not exist')
       }
@@ -51,7 +49,6 @@ export function checkPageExistence(endpoint) {
 
   return new Promise((resolve, reject) => {
     http.get(options, (response) => {
-      console.log(response.statusCode)
       resolve(response.statusCode == 418 ? false : true)
     })
   })
