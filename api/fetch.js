@@ -7,12 +7,10 @@ import util from 'util'
 import { resolve } from 'path'
 import bl from 'bl'
 
-export default async function fetchHTML() {
+export default async function fetchHTML(URL) {
   const proxy = process.env.SOCKS_PROXY || 'socks5h://127.0.0.1:9050'
   console.log('Using proxy server %j', proxy)
-  const endpoint =
-    config.STRONGHOLD_URL ||
-    'https://duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion'
+  const endpoint = URL
   console.log('Attempting to GET %j', endpoint)
   // Prepare options for the http/s module by parsing the endpoint URL:
   let options = parse(endpoint)
