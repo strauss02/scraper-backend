@@ -2,10 +2,14 @@ import { parse } from 'url'
 import http from 'http'
 import https from 'https'
 import SocksProxyAgent from 'socks-proxy-agent'
-import config from './config.js'
-import util from 'util'
-import { resolve } from 'path'
 import bl from 'bl'
+import {
+  parseInfoFromEntry,
+  parseButtonLinks,
+  getAllEntriesURLs,
+} from './parsing.js'
+import config from './config.js'
+
 export async function fetchHTML(URL) {
   const proxy = process.env.SOCKS_PROXY || 'socks5h://127.0.0.1:9050'
   console.log('Using proxy server %j', proxy)
@@ -52,4 +56,21 @@ export function checkPageExistence(endpoint) {
       resolve(response.statusCode == 418 ? false : true)
     })
   })
+}
+
+export async function getAllEntriesPromised() {
+  const entriesURLs = await getAllEntriesURLs()
+  const allEntriesPromised = entriesURLs.map(async (URL) => {
+    const HTML = await fetchHTML(URL)
+    const info = await parseInfoFromEntry(HTML)
+    return info
+  })
+
+  return allEntriesPromised
+}
+
+export async function getAllEntriesParsedInfo() {
+  const allEntriesPromises = await getAllEntriesPromised()
+  const allEntriesParsedInfo = await Promise.all(allEntriesPromises)
+  console.log(allEntriesParsedInfo)
 }

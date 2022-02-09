@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio'
 import { checkPageExistence } from './fetching.js'
 import config from './config.js'
 import { fetchHTML } from './fetching.js'
+import { IGNORED_USERNAMES } from './constants.js'
 
 /**
  *
@@ -20,6 +21,11 @@ export function parseButtonLinks(HTML) {
   return hrefs
 }
 
+/**
+ *
+ * @param {string} entry - the HTML of the entry page to parse.
+ * @returns {Object} - the parsed entry represented in an object.
+ */
 export async function parseInfoFromEntry(entry) {
   const $ = cheerio.load(entry)
   let info = {}
@@ -48,12 +54,16 @@ function parseContentFromHTML($) {
   return contentLines.join('\n')
 }
 
+// Product requirements state anoynymous author names must be normalized to ''
 function parseAuthorAndDateFromHTML($) {
   // 21  is the index of the first character after "Posted by"
   // For future use this shouldn't be hard coded, rather be calculated by a parameter.
   const trimmedInfoLine = $('[class=col-sm-6]').text().slice(21, -1)
   const authorStringEndIndex = trimmedInfoLine.indexOf(' at ')
-  const author = trimmedInfoLine.slice(0, authorStringEndIndex)
+  let author = trimmedInfoLine.slice(0, authorStringEndIndex)
+  if (IGNORED_USERNAMES.includes(author)) {
+    author = ''
+  }
   const dateStartIndex = `${author} at `.length
   const dateUncut = trimmedInfoLine.slice(dateStartIndex)
   const date = dateUncut.replace(/(\r\n|\n|\r)/gm, '')
