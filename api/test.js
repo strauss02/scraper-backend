@@ -154,10 +154,11 @@ await mongoose
 
 const data = await getAllEntriesParsedInfo()
 
-await Entry.insertMany(data, (err, res) => {
+Entry.insertMany(data, (err, res) => {
   if (err) {
     console.log('there was an error', err)
   } else {
     console.log(res)
   }
+  mongoose.connection.close()
 })

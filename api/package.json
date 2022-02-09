@@ -6,9 +6,11 @@
   "dependencies": {
     "bl": "^5.0.0",
     "cheerio": "^1.0.0-rc.10",
+    "express": "^4.17.2",
     "https-proxy-agent": "^5.0.0",
     "mongoose": "^6.2.1",
     "node-fetch": "^3.2.0",
+    "nodemon": "^2.0.15",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.16.1",
@@ -16,7 +18,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./server/index.js"
   },
   "keywords": [],
   "author": "Ido Strauss <strauss02@hotmail.co.il>",
