@@ -72,5 +72,5 @@ export async function getAllEntriesPromised() {
 export async function getAllEntriesParsedInfo() {
   const allEntriesPromises = await getAllEntriesPromised()
   const allEntriesParsedInfo = await Promise.all(allEntriesPromises)
-  console.log(allEntriesParsedInfo)
+  return allEntriesParsedInfo
 }
