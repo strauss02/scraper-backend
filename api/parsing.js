@@ -21,7 +21,7 @@ export function parseButtonLinks(HTML) {
 }
 
 export async function parseInfoFromEntry(entry) {
-  const $ = await cheerio.load(entry)
+  const $ = cheerio.load(entry)
   let info = {}
   info.title = parseTitleFromHTML($)
   info.content = parseContentFromHTML($)
