@@ -36,8 +36,9 @@ export async function parseInfoFromEntry(entry) {
 }
 
 function parseTitleFromHTML($) {
-  const title = $('h4').text()
-  title.replace('\n')
+  let title = $('h4').text()
+  title = title.trim()
+
   return title
 }
 
@@ -48,7 +49,7 @@ function parseContentFromHTML($) {
     .find('li')
     .each(function () {
       const $li = $(this)
-      contentLines.push($li.text())
+      contentLines.push($li.text().trim())
     })
 
   return contentLines.join('\n')
@@ -61,12 +62,14 @@ function parseAuthorAndDateFromHTML($) {
   const trimmedInfoLine = $('[class=col-sm-6]').text().slice(21, -1)
   const authorStringEndIndex = trimmedInfoLine.indexOf(' at ')
   let author = trimmedInfoLine.slice(0, authorStringEndIndex)
+  const dateStartIndex = `${author} at `.length
+  const dateUncut = trimmedInfoLine.slice(dateStartIndex)
+  const date = normalizeDate(dateUncut).trim()
+  // This normalization is performed last becuase the actual username had been used before to determine the beggining index of the date string.
   if (IGNORED_USERNAMES.includes(author)) {
     author = ''
   }
-  const dateStartIndex = `${author} at `.length
-  const dateUncut = trimmedInfoLine.slice(dateStartIndex)
-  const date = dateUncut.replace(/(\r\n|\n|\r)/gm, '')
+
   return { date, author }
 }
 
@@ -90,4 +93,12 @@ export async function getAllEntriesURLs() {
   // Remove all the undefined values
   entriesURLs = entriesURLs.filter((item) => item)
   return entriesURLs
+}
+
+function normalizeDate(date) {
+  // console.log('in date normalization:' + date)
+  // const date1 = date.replace(/(\r\n|\n|\r)/gm, '')
+  // const date2 = date1.replaceAll('\t', '')
+  // return date2
+  return date
 }
