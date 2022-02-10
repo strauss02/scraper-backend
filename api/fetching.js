@@ -9,6 +9,7 @@ import {
   getAllEntriesURLs,
 } from './parsing.js'
 import config from './config.js'
+import { newestEntryDateString } from './server/index.js'
 
 export async function fetchHTML(URL) {
   const proxy = process.env.SOCKS_PROXY || 'socks5h://127.0.0.1:9050'
@@ -60,17 +61,32 @@ export function checkPageExistence(endpoint) {
 
 export async function getAllEntriesPromised() {
   const entriesURLs = await getAllEntriesURLs()
-  const allEntriesPromised = entriesURLs.map(async (URL) => {
+  let allEntriesPromised = entriesURLs.map(async (URL) => {
     const HTML = await fetchHTML(URL)
     const info = await parseInfoFromEntry(HTML)
+    if (!isEntryNew(info, newestEntryDateString)) {
+      return
+    }
     return info
   })
 
   return allEntriesPromised
 }
 
-export async function getAllEntriesParsedInfo() {
+export async function getAllNewEntriesParsedInfo() {
   const allEntriesPromises = await getAllEntriesPromised()
-  const allEntriesParsedInfo = await Promise.all(allEntriesPromises)
+  let allEntriesParsedInfo = await Promise.all(allEntriesPromises)
+  allEntriesParsedInfo = allEntriesParsedInfo.filter((entry) => entry)
   return allEntriesParsedInfo
+}
+
+export function getNewestEntryDate(entries) {
+  // entries.reduce((prevEntry, currentEntry)=> {
+  //   return new Date(prevEntry.date) > new Date(currentEntry.date) ? true : false
+  // })
+  return new Date(Math.max(...entries.map((entry) => new Date(entry.date))))
+}
+
+export function isEntryNew(entry, newestDate) {
+  return new Date(entry.date) > new Date(newestDate) ? true : false
 }

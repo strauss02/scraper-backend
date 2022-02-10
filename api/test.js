@@ -1,4 +1,7 @@
-import { getAllEntriesParsedInfo } from './fetching.js'
+import {
+  getAllNewEntriesParsedInfo as getAllNewEntriesParsedInfo,
+  getNewestEntryDate,
+} from './fetching.js'
 import Entry from './db/models/entry.js'
 import mongoose from 'mongoose'
 
@@ -145,20 +148,35 @@ anywhere in the world plus the safe involvement of drop persons in our business,
   },
 ]
 
-await mongoose
-  .connect('mongodb://localhost:27017/')
-  .then((res) => console.log('connected to mongodb'))
-  .catch(() => {
-    console.log('problem connecting')
-  })
+// await mongoose
+//   .connect('mongodb://localhost:27017/')
+//   .then((res) => console.log('connected to mongodb'))
+//   .catch(() => {
+//     console.log('problem connecting')
+//   })
 
-const data = await getAllEntriesParsedInfo()
+// let newestEntryDateString = '09 Feb 2022, 01:15:19 UTC'
 
-Entry.insertMany(data, (err, res) => {
-  if (err) {
-    console.log('there was an error', err)
-  } else {
-    console.log(res)
-  }
-  mongoose.connection.close()
-})
+// function isEntryNew(entry) {
+//   return new Date(entry.date) > new Date(newestEntryDateString) ? true : false
+// }
+
+// console.log(
+//   sampleData.map((entry) => {
+//     console.log(isEntryNew(entry))
+//     return new Date(entry.date)
+//   })
+// )
+
+// Entry.insertMany(data, (err, res) => {
+//   if (err) {
+//     console.log('there was an error', err)
+//   } else {
+//     console.log(res)
+//   }
+//   mongoose.connection.close()
+// })
+
+let data = getNewestEntryDate(sampleData)
+
+console.log(data)
