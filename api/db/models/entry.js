@@ -16,6 +16,9 @@ let entrySchema = new Schema(
     content: {
       type: String,
     },
+    analysis: {
+      type: Object,
+    },
   },
   { collection: 'Entries' }
 )

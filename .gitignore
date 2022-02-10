@@ -1,4 +1,6 @@
 node_modules
+.env
 screenshot1.png
 dbpostgres-data
 mongo-data
+creds.json
