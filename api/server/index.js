@@ -8,6 +8,17 @@ import { getAllNewEntriesParsedInfo, getNewestEntryDate } from '../fetching.js'
 import entry from '../db/models/entry.js'
 import { addAnalysisToEntries } from '../analyzing.js'
 
+/*************** 
+MongoDB command to remove duplicates:
+
+db.Entries.find({}, {date:1}).sort({_id:1}).forEach(function(doc){
+    db.Entries.deleteOne({_id:{$gt:doc._id}, date:doc.date});
+})
+
+/*************** */
+
+//: TODO: Add error handling.
+
 const client = await new language.LanguageServiceClient()
 
 await mongoose
@@ -19,10 +30,10 @@ await mongoose
 
 export let newestEntryDateString = '10 Feb 2022, 21:28:42 UTC '
 
-cron.schedule('*/2 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
   console.log('running a task every two minutes')
   //
-  const latestEntry = await entry.findOne().sort({ $natural: 1 }).limit(1)
+  const latestEntry = await entry.findOne().sort({ date: -1 }).limit(1)
   console.log('latest entry', latestEntry)
   // convert to string
   const convertedDate = latestEntry['date'].toString()
@@ -42,6 +53,7 @@ cron.schedule('*/2 * * * *', async () => {
   //
   const analyzedData = await addAnalysisToEntries(data, client)
   console.log('Data has been assigned with analysis.')
+  console.log(analyzedData)
   await storeEntries(analyzedData)
   console.log('Data successfuly stored. Scraping job completed.')
   console.log(
@@ -56,7 +68,7 @@ async function storeEntries(data) {
     if (err) {
       console.log('there was an error', err)
     } else {
-      console.log(res)
+      console.log('storage complete!')
     }
   })
 }
