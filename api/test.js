@@ -152,6 +152,6 @@ const sampleData = [
 const client = await new language.LanguageServiceClient()
 
 const analyzedData = await addAnalysisToEntries(sampleData, client)
-console.log(analyzedData)
+// console.log(analyzedData)
 
 storeEntries(analyzedData)

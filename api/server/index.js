@@ -17,17 +17,38 @@ await mongoose
     console.log('problem connecting')
   })
 
-export let newestEntryDateString = '1 Jan 1970, 00:00:00 UTC'
+export let newestEntryDateString = '10 Feb 2022, 21:28:42 UTC '
 
 cron.schedule('*/2 * * * *', async () => {
   console.log('running a task every two minutes')
+  //
+  const latestEntry = await entry.findOne().sort({ $natural: 1 }).limit(1)
+  console.log('latest entry', latestEntry)
+  // convert to string
+  const convertedDate = latestEntry['date'].toString()
+  console.log('converted date', convertedDate)
+  console.log(
+    'this is the latest entry date: ',
+    convertedDate,
+    'Getting entries later than this date.'
+  )
+  newestEntryDateString = convertedDate
+  //
   const data = await getAllNewEntriesParsedInfo()
-  console.log(data)
-  newestEntryDateString = getNewestEntryDate(data)
+  console.log('All pastes scraped and parsed. ')
+  //
+  // newestEntryDateString = await getNewestEntryDate(data)
+  // console.log('Got latest entry date: ', newestEntryDateString)
+  //
   const analyzedData = await addAnalysisToEntries(data, client)
-  console.log(analyzedData)
-
+  console.log('Data has been assigned with analysis.')
   await storeEntries(analyzedData)
+  console.log('Data successfuly stored. Scraping job completed.')
+  console.log(
+    'latest date is currently:',
+    newestEntryDateString,
+    typeof newestEntryDateString
+  )
 })
 
 async function storeEntries(data) {

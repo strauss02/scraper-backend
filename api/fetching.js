@@ -64,6 +64,7 @@ export async function getAllEntriesPromised() {
   let allEntriesPromised = entriesURLs.map(async (URL) => {
     const HTML = await fetchHTML(URL)
     const info = await parseInfoFromEntry(HTML)
+    // Getting rid of entries older than the latest entry
     if (!isEntryNew(info, newestEntryDateString)) {
       return
     }
@@ -80,10 +81,10 @@ export async function getAllNewEntriesParsedInfo() {
   return allEntriesParsedInfo
 }
 
-export function getNewestEntryDate(entries) {
-  // entries.reduce((prevEntry, currentEntry)=> {
-  //   return new Date(prevEntry.date) > new Date(currentEntry.date) ? true : false
-  // })
+export async function getNewestEntryDate(entries) {
+  // const latestEntry = await entry.findOne({}, { sort: { $natural: -1 } })
+  // console.log('this is the latwest entry: ', latestEntry)
+
   return new Date(Math.max(...entries.map((entry) => new Date(entry.date))))
 }
 
