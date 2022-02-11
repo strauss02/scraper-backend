@@ -1,8 +1,14 @@
+import 'dotenv/config'
+import language from '@google-cloud/language'
+
 import app from './app.js'
 import mongoose from 'mongoose'
 import cron from 'node-cron'
 import { getAllNewEntriesParsedInfo, getNewestEntryDate } from '../fetching.js'
 import entry from '../db/models/entry.js'
+import { addAnalysisToEntries } from '../analyzing.js'
+
+const client = await new language.LanguageServiceClient()
 
 await mongoose
   .connect('mongodb://localhost:27017/')
@@ -16,9 +22,12 @@ export let newestEntryDateString = '1 Jan 1970, 00:00:00 UTC'
 cron.schedule('*/2 * * * *', async () => {
   console.log('running a task every two minutes')
   const data = await getAllNewEntriesParsedInfo()
+  console.log(data)
   newestEntryDateString = getNewestEntryDate(data)
+  const analyzedData = await addAnalysisToEntries(data, client)
+  console.log(analyzedData)
 
-  await storeEntries(data)
+  await storeEntries(analyzedData)
 })
 
 async function storeEntries(data) {
