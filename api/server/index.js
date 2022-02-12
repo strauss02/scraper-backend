@@ -47,13 +47,13 @@ cron.schedule('*/1 * * * *', async () => {
   //
   const data = await getAllNewEntriesParsedInfo()
   console.log('All pastes scraped and parsed. ')
+  console.log('this is the raw data, right after scraping and parsing:', data)
   //
   // newestEntryDateString = await getNewestEntryDate(data)
   // console.log('Got latest entry date: ', newestEntryDateString)
   //
   const analyzedData = await addAnalysisToEntries(data, client)
   console.log('Data has been assigned with analysis.')
-  console.log(analyzedData)
   await storeEntries(analyzedData)
   console.log('Data successfuly stored. Scraping job completed.')
   console.log(

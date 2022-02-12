@@ -29,7 +29,7 @@ export async function storeEntries(data) {
     if (err) {
       console.log('there was an error', err)
     } else {
-      console.log(res)
+      console.log(' Entries successfully stored. Response:', res)
     }
   })
 }

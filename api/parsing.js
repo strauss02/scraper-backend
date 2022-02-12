@@ -74,7 +74,7 @@ function parseAuthorAndDateFromHTML($) {
 }
 
 export async function getAllEntriesURLs() {
-  let pageNum = 0
+  let pageNum = 1
   let urlTemplate = `${config.STRONGHOLD_URL}?page=${pageNum}`
   let entriesURLs = []
   let pageExistence = await checkPageExistence(urlTemplate)
