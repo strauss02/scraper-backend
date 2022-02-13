@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import language from '@google-cloud/language'
-
 import app from './app.js'
 import mongoose from 'mongoose'
 import cron from 'node-cron'
@@ -30,7 +29,7 @@ await mongoose
 
 export let newestEntryDateString = '10 Feb 2022, 21:28:42 UTC '
 
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/2 * * * *', async () => {
   try {
     console.log('running a task every two minutes')
     //
