@@ -10,6 +10,7 @@ export async function analyzeEntry(entry, client) {
   try {
     const [entitySentiment] = await client.analyzeEntitySentiment({ document })
     const [documentSentiment] = await client.analyzeSentiment({ document })
+    return { entitySentiment, documentSentiment }
   } catch (error) {
     console.log(
       'there was an error while trying to analyze sentiment. This entry will have an empty analysis. entry title:',
@@ -17,10 +18,32 @@ export async function analyzeEntry(entry, client) {
       'error:',
       error
     )
-    return { entitySentiment: [], documentSentiment: [] }
+    return {
+      entitySentiment: {
+        entities: [
+          {
+            mentions: [],
+            name: 'null',
+            type: 'null',
+            salience: 0.0,
+            sentiment: {
+              magnitude: 0.0,
+              score: 0.0,
+            },
+          },
+        ],
+        language: 'en',
+      },
+      documentSentiment: {
+        sentences: [],
+        documentSentiment: {
+          magnitude: 0,
+          score: 0,
+        },
+        language: 'en',
+      },
+    }
   }
-
-  return { entitySentiment, documentSentiment }
 }
 
 export async function addAnalysisToEntries(entries, client) {

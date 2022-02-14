@@ -52,7 +52,7 @@ function parseContentFromHTML($) {
       contentLines.push($li.text().trim())
     })
 
-  return contentLines.join('\n')
+  return contentLines.join('')
 }
 
 // Product requirements state anoynymous author names must be normalized to ''
