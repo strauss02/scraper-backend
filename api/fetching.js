@@ -24,23 +24,27 @@ export async function fetchHTML(URL) {
   // Depending on the endpoint's protocol, we use http or https module:
   const httpOrHttps = options.protocol === 'https:' ? https : http
   // Make an HTTP GET request:
-
-  return new Promise((resolve, reject) => {
-    httpOrHttps.get(options, (response) => {
-      // response.setEncoding('utf8')
-      if (response.statusCode == 418) {
-        reject('page does not exist')
-      }
-      response.pipe(
-        bl((err, data) => {
-          if (err) {
-            reject(err)
-          }
-          resolve(data.toString())
-        })
-      )
+  try {
+    return new Promise((resolve, reject) => {
+      httpOrHttps.get(options, (response) => {
+        // response.setEncoding('utf8')
+        if (response.statusCode == 418) {
+          reject('page does not exist')
+        }
+        response.pipe(
+          bl((err, data) => {
+            if (err) {
+              reject(err)
+            }
+            resolve(data.toString())
+          })
+        )
+      })
     })
-  })
+  } catch (error) {
+    console.log('There was an error while trying to fetch. error:', error)
+    return error
+  }
 }
 
 export function checkPageExistence(endpoint) {
