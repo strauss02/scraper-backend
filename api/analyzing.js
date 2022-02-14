@@ -7,9 +7,18 @@ export async function analyzeEntry(entry, client) {
     content: entry.content,
     type: 'PLAIN_TEXT',
   }
-
-  const [entitySentiment] = await client.analyzeEntitySentiment({ document })
-  const [documentSentiment] = await client.analyzeSentiment({ document })
+  try {
+    const [entitySentiment] = await client.analyzeEntitySentiment({ document })
+    const [documentSentiment] = await client.analyzeSentiment({ document })
+  } catch (error) {
+    console.log(
+      'there was an error while trying to analyze sentiment. This entry will have an empty analysis. entry title:',
+      entry.title,
+      'error:',
+      error
+    )
+    return { entitySentiment: [], documentSentiment: [] }
+  }
 
   return { entitySentiment, documentSentiment }
 }
