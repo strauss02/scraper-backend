@@ -30,7 +30,7 @@ await mongoose
 export let newestEntryDateString = '10 Feb 2022, 21:28:42 UTC '
 
 cron.schedule(
-  '*/2 * * * *',
+  '* * * * *',
   async () => {
     try {
       console.log('running a task every two minutes')
