@@ -23,7 +23,7 @@ const client = await new language.LanguageServiceClient()
 await mongoose
   .connect(process.env.MONGO_URI)
   .then((res) => console.log('connected to mongodb'))
-  .catch(() => {
+  .catch((err) => {
     console.log('problem connecting', err)
   })
 
@@ -90,6 +90,6 @@ async function storeEntries(data) {
   })
 }
 
-app.listen(3001, () => {
+app.listen(process.env.PORT || 3001, () => {
   console.log('listening on 3001 lol')
 })
