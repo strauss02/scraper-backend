@@ -1,8 +1,11 @@
+import 'dotenv/config'
 import mongoose from 'mongoose'
 
+console.log(process.env.MONGO_URI)
+
 mongoose
-  .connect('mongodb://localhost:27017/')
+  .connect(process.env.MONGO_URI)
   .then((res) => console.log('connected to mongodb'))
-  .catch(() => {
-    console.log('problem connecting')
+  .catch((err) => {
+    console.log('problem connecting:', err)
   })

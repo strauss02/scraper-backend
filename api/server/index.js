@@ -21,10 +21,10 @@ db.Entries.find({}, {date:1}).sort({_id:1}).forEach(function(doc){
 const client = await new language.LanguageServiceClient()
 
 await mongoose
-  .connect('mongodb://localhost:27017/')
+  .connect(process.env.MONGO_URI)
   .then((res) => console.log('connected to mongodb'))
   .catch(() => {
-    console.log('problem connecting')
+    console.log('problem connecting', err)
   })
 
 export let newestEntryDateString = '10 Feb 2022, 21:28:42 UTC '
@@ -35,15 +35,19 @@ cron.schedule('*/2 * * * *', async () => {
     //
     const latestEntry = await entry.findOne().sort({ date: -1 }).limit(1)
     console.log('latest entry', latestEntry)
-    // convert to string
-    const convertedDate = latestEntry['date'].toString()
-    console.log('converted date', convertedDate)
-    console.log(
-      'this is the latest entry date: ',
-      convertedDate,
-      'Getting entries later than this date.'
-    )
-    newestEntryDateString = convertedDate
+    if (latestEntry) {
+      // convert to string
+      const convertedDate = latestEntry['date'].toString()
+      console.log('converted date', convertedDate)
+      console.log(
+        'this is the latest entry date: ',
+        convertedDate,
+        'Getting entries later than this date.'
+      )
+      newestEntryDateString = convertedDate
+    } else {
+      newestEntryDateString = '10 Feb 2022, 21:28:42 UTC '
+    }
     //
     const data = await getAllNewEntriesParsedInfo()
     console.log('All pastes scraped and parsed. ')

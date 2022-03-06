@@ -8,8 +8,8 @@ import {
   parseButtonLinks,
   getAllEntriesURLs,
 } from './parsing.js'
-import config from './config.js'
 import { newestEntryDateString } from './server/index.js'
+import 'dotenv/config'
 
 export async function fetchHTML(URL) {
   const proxy = process.env.SOCKS_PROXY || 'socks5h://127.0.0.1:9050'
