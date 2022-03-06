@@ -77,7 +77,7 @@ cron.schedule(
       )
     }
   },
-  { scheduled: 'false' }
+  { scheduled: false }
 )
 
 async function storeEntries(data) {
