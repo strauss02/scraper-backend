@@ -26,20 +26,24 @@ export async function fetchHTML(URL) {
   // Make an HTTP GET request:
   try {
     return new Promise((resolve, reject) => {
-      httpOrHttps.get(options, (response) => {
-        // response.setEncoding('utf8')
-        if (response.statusCode == 418) {
-          reject('page does not exist')
-        }
-        response.pipe(
-          bl((err, data) => {
-            if (err) {
-              reject(err)
-            }
-            resolve(data.toString())
-          })
-        )
-      })
+      httpOrHttps
+        .get(options, (response) => {
+          // response.setEncoding('utf8')
+          if (response.statusCode == 418) {
+            reject('page does not exist')
+          }
+          response.pipe(
+            bl((err, data) => {
+              if (err) {
+                reject(err)
+              }
+              resolve(data.toString())
+            })
+          )
+        })
+        .on('error', (e) => {
+          console.error(e)
+        })
     })
   } catch (error) {
     console.log('There was an error while trying to fetch. error:', error)
