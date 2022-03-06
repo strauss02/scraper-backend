@@ -23,7 +23,7 @@ const client = await new language.LanguageServiceClient()
 await mongoose
   .connect(process.env.MONGO_URI)
   .then((res) => console.log('connected to mongodb'))
-  .catch(() => {
+  .catch((err) => {
     console.log('problem connecting', err)
   })
 
