@@ -38,7 +38,11 @@ export async function fetchHTML(URL) {
               if (err) {
                 reject(err)
               }
-              resolve(data.toString())
+              if (!data) {
+                reject(`data is undefined`)
+              } else {
+                resolve(data.toString())
+              }
             })
           )
         })
