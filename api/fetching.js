@@ -8,9 +8,10 @@ import {
   parseButtonLinks,
   getAllEntriesURLs,
 } from './parsing.js'
-import { newestEntryDateString } from './server/index.js'
 import 'dotenv/config'
 import { error } from 'console'
+import entry from './db/models/entry.js'
+export let newestEntryDateString
 
 export async function fetchHTML(URL) {
   try {
@@ -101,10 +102,28 @@ export async function getAllNewEntriesParsedInfo() {
   return allEntriesParsedInfo
 }
 
-export async function getNewestEntryDate(entries) {
-  // const latestEntry = await entry.findOne({}, { sort: { $natural: -1 } })
-  // console.log('this is the latwest entry: ', latestEntry)
+export async function setLatestEntryDate() {
+  const latestEntry = await entry.findOne().sort({ date: -1 }).limit(1)
+  console.log('Latest entry pulled from DB:', latestEntry)
+  if (latestEntry) {
+    // Convert to string
+    const convertedDate = latestEntry['date'].toString()
+    console.log(
+      'Latest entry date found and converted to string: ',
+      convertedDate,
+      'Getting entries later than this date.'
+    )
+    newestEntryDateString = convertedDate
+  } else {
+    console.log(
+      `Couldn't find an entry date. Setting newest entry date to an arbitrary date: ${newestEntryDateString}`
+    )
+    // Arbitrary date indicating from when should scraping begin
+    newestEntryDateString = '10 Feb 2022, 12:00:00 UTC '
+  }
+}
 
+export async function getNewestEntryDate(entries) {
   return new Date(Math.max(...entries.map((entry) => new Date(entry.date))))
 }
 

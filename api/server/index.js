@@ -3,66 +3,45 @@ import language from '@google-cloud/language'
 import app from './app.js'
 import mongoose from 'mongoose'
 import cron from 'node-cron'
-import { getAllNewEntriesParsedInfo, getNewestEntryDate } from '../fetching.js'
+import {
+  getAllNewEntriesParsedInfo,
+  getNewestEntryDate,
+  setLatestEntryDate,
+  newestEntryDateString,
+} from '../fetching.js'
 import entry from '../db/models/entry.js'
 import { addAnalysisToEntries } from '../analyzing.js'
 
-/*************** 
-MongoDB command to remove duplicates:
-
-db.Entries.find({}, {date:1}).sort({_id:1}).forEach(function(doc){
-    db.Entries.deleteOne({_id:{$gt:doc._id}, date:doc.date});
-})
-
-****************/
-
-//: TODO: Add error handling.
-
+// Connect NLP API
 const client = await new language.LanguageServiceClient()
 
+// Connect database
 await mongoose
   .connect(process.env.MONGO_URI)
-  .then((res) => console.log('connected to mongodb'))
+  .then((res) => console.log('Connected successfully to MongoDB'))
   .catch((err) => {
-    console.log('problem connecting', err)
+    console.log('Connection to MongoDB failed.', err)
   })
 
-export let newestEntryDateString = '10 Feb 2022, 21:28:42 UTC '
-
+// Cron scheme is set for 'every 2 minutes'
 cron.schedule('*/2 * * * *', async () => {
   try {
-    console.log('running a task every two minutes')
-    //
-    const latestEntry = await entry.findOne().sort({ date: -1 }).limit(1)
-    console.log('latest entry', latestEntry)
-    if (latestEntry) {
-      // convert to string
-      const convertedDate = latestEntry['date'].toString()
-      console.log('converted date', convertedDate)
-      console.log(
-        'this is the latest entry date: ',
-        convertedDate,
-        'Getting entries later than this date.'
-      )
-      newestEntryDateString = convertedDate
-    } else {
-      newestEntryDateString = '10 Feb 2022, 21:28:42 UTC '
-    }
-    //
+    console.log('Running task scheduled for every 2 minutes')
+    setLatestEntryDate()
     const data = await getAllNewEntriesParsedInfo()
-    console.log('All pastes scraped and parsed. ')
-    console.log('this is the raw data, right after scraping and parsing:', data)
-    //
-    // newestEntryDateString = await getNewestEntryDate(data)
-    // console.log('Got latest entry date: ', newestEntryDateString)
-    //
+    console.log(
+      'All pastes scraped and parsed. This is the raw data, right after scraping and parsing: ',
+      data
+    )
+    // Begin analysis phase
     const analyzedData = await addAnalysisToEntries(data, client)
     console.log('Data has been assigned with analysis.')
     await storeEntries(analyzedData)
     console.log('Data successfuly stored. Scraping job completed.')
     console.log(
-      'latest date is currently:',
+      'Latest date is currently:',
       newestEntryDateString,
+      'Type of value is:',
       typeof newestEntryDateString
     )
   } catch (error) {
@@ -78,11 +57,12 @@ async function storeEntries(data) {
     if (err) {
       console.log('there was an error', err)
     } else {
-      console.log('storage complete!')
+      console.log('Entries stored in DB successfully!')
     }
   })
 }
 
-app.listen(3001, () => {
-  console.log('listening on 3001 lol')
+let PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log('Server is listening on port', PORT)
 })
