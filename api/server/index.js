@@ -5,7 +5,6 @@ import mongoose from 'mongoose'
 import cron from 'node-cron'
 import {
   getAllNewEntriesParsedInfo,
-  getNewestEntryDate,
   setLatestEntryDate,
   newestEntryDateString,
 } from '../fetching.js'

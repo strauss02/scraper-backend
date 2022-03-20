@@ -1,13 +1,12 @@
 import * as cheerio from 'cheerio'
-import { checkPageExistence } from './fetching.js'
+import { checkPageExistence, fetchHTML } from './fetching.js'
 import config from './config.js'
-import { fetchHTML } from './fetching.js'
 import { IGNORED_USERNAMES } from './constants.js'
 
 /**
  *
- * @param {string} HTML - the content of the HTML page to parse.
- * @returns
+ * @param {string} HTML - the content of the HTML page to parse
+ * @returns {string[]}  - links to full entries from the page
  */
 export function parseButtonLinks(HTML) {
   const $ = cheerio.load(HTML)
@@ -56,15 +55,15 @@ function parseContentFromHTML($) {
 }
 
 // Product requirements state anoynymous author names must be normalized to ''
+// 21  is the index of the first character after "Posted by"
+// For future use this shouldn't be hard coded, rather be calculated by a parameter.
 function parseAuthorAndDateFromHTML($) {
-  // 21  is the index of the first character after "Posted by"
-  // For future use this shouldn't be hard coded, rather be calculated by a parameter.
   const trimmedInfoLine = $('[class=col-sm-6]').text().slice(21, -1)
   const authorStringEndIndex = trimmedInfoLine.indexOf(' at ')
   let author = trimmedInfoLine.slice(0, authorStringEndIndex)
   const dateStartIndex = `${author} at `.length
   const dateUncut = trimmedInfoLine.slice(dateStartIndex)
-  const date = normalizeDate(dateUncut).trim()
+  const date = dateUncut.trim()
   // This normalization is performed last becuase the actual username had been used before to determine the beggining index of the date string.
   if (IGNORED_USERNAMES.includes(author)) {
     author = ''
@@ -93,12 +92,4 @@ export async function getAllEntriesURLs() {
   // Remove all the undefined values
   entriesURLs = entriesURLs.filter((item) => item)
   return entriesURLs
-}
-
-function normalizeDate(date) {
-  // console.log('in date normalization:' + date)
-  // const date1 = date.replace(/(\r\n|\n|\r)/gm, '')
-  // const date2 = date1.replaceAll('\t', '')
-  // return date2
-  return date
 }

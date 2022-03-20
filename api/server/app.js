@@ -11,4 +11,8 @@ app.get('/', (req, res) => {
   res.send('aloha')
 })
 
+app.use((err, req, res, next) => {
+  res.status(500).send(`Unexpected server error. ${err}`)
+})
+
 export default app

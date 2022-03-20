@@ -3,13 +3,8 @@ import http from 'http'
 import https from 'https'
 import SocksProxyAgent from 'socks-proxy-agent'
 import bl from 'bl'
-import {
-  parseInfoFromEntry,
-  parseButtonLinks,
-  getAllEntriesURLs,
-} from './parsing.js'
+import { parseInfoFromEntry, getAllEntriesURLs } from './parsing.js'
 import 'dotenv/config'
-import { error } from 'console'
 import entry from './db/models/entry.js'
 export let newestEntryDateString
 
@@ -30,7 +25,6 @@ export async function fetchHTML(URL) {
     return new Promise((resolve, reject) => {
       httpOrHttps
         .get(options, (response) => {
-          // response.setEncoding('utf8')
           if (response.statusCode == 418) {
             reject('page does not exist')
           }
@@ -121,10 +115,6 @@ export async function setLatestEntryDate() {
     // Arbitrary date indicating from when should scraping begin
     newestEntryDateString = '10 Feb 2022, 12:00:00 UTC '
   }
-}
-
-export async function getNewestEntryDate(entries) {
-  return new Date(Math.max(...entries.map((entry) => new Date(entry.date))))
 }
 
 export function isEntryNew(entry, newestDate) {
